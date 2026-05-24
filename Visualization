@@ -1,0 +1,164 @@
+# ==============================
+# POLLUTION LEVEL MONITORING
+# FULL PYTHON CODE
+# ==============================
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# ------------------------------
+# STEP 1: CREATE DATASET
+# ------------------------------
+
+data = {
+    "Record_ID": [1,2,3,4,5,6,7,8,9,10,11,12],
+    
+    "Zone_Name": [
+        "Industrial","Commercial","Residential",
+        "Industrial","Commercial","Residential",
+        "Industrial","Commercial","Residential",
+        "Industrial","Commercial","Residential"
+    ],
+    
+    "Month": [
+        "October","October","October",
+        "November","November","November",
+        "December","December","December",
+        "January","January","January"
+    ],
+    
+    "AQI": [180,130,90,190,140,95,210,155,100,195,145,98],
+    
+    "CO2_Level": [420,350,280,440,360,290,470,380,300,450,370,295],
+    
+    "PM25": [85,60,35,90,65,38,100,72,40,92,68,39],
+    
+    "Temperature": [33,32,31,32,31,30,29,28,27,30,29,28],
+    
+    "Humidity": [68,70,72,66,69,73,64,68,74,65,67,71]
+}
+
+# Create DataFrame
+df = pd.DataFrame(data)
+
+# ------------------------------
+# FIGURE 1 : DATASET DISPLAY
+# ------------------------------
+
+print("\nPOLLUTION MONITORING DATASET\n")
+print(df)
+
+# ------------------------------
+# FIGURE 2 : MISSING VALUES
+# AND BASIC STATISTICS
+# ------------------------------
+
+print("\nMISSING VALUES\n")
+print(df.isnull().sum())
+
+print("\nBASIC STATISTICS\n")
+print(df.describe())
+
+# ------------------------------
+# FIGURE 3 :
+# MONTHLY AVG AQI
+# TOTAL CO2 BY ZONE
+# ------------------------------
+
+monthly_avg_aqi = df.groupby("Month")["AQI"].mean()
+
+print("\nMONTHLY AVERAGE AQI\n")
+print(monthly_avg_aqi)
+
+total_co2 = df.groupby("Zone_Name")["CO2_Level"].sum()
+
+print("\nTOTAL CO2 LEVEL BY ZONE\n")
+print(total_co2)
+
+# ------------------------------
+# FIGURE 4 :
+# MAX AQI + PIVOT TABLE
+# + NUMPY STATISTICS
+# ------------------------------
+
+max_aqi = df.groupby("Zone_Name")["AQI"].max()
+
+print("\nMAX AQI BY ZONE\n")
+print(max_aqi)
+
+pivot_table = df.pivot_table(
+    values="AQI",
+    index="Month",
+    columns="Zone_Name"
+)
+
+print("\nPIVOT TABLE\n")
+print(pivot_table)
+
+# NumPy Statistics
+aqi_array = np.array(df["AQI"])
+
+print("\nNUMPY STATISTICS\n")
+print("Mean AQI :", np.mean(aqi_array))
+print("Max AQI  :", np.max(aqi_array))
+print("Min AQI  :", np.min(aqi_array))
+print("Std Dev  :", np.std(aqi_array))
+
+# ------------------------------
+# FIGURE 5 :
+# BAR CHART - AVG AQI BY MONTH
+# ------------------------------
+
+monthly_avg_aqi.plot(
+    kind='bar',
+    figsize=(8,5)
+)
+
+plt.title("Average AQI by Month")
+plt.xlabel("Month")
+plt.ylabel("Average AQI")
+plt.grid(True)
+
+plt.show()
+
+# ------------------------------
+# FIGURE 6 :
+# BAR CHART - TOTAL CO2 BY ZONE
+# ------------------------------
+
+total_co2.plot(
+    kind='bar',
+    figsize=(8,5)
+)
+
+plt.title("Total CO2 Emission by Zone")
+plt.xlabel("Zone")
+plt.ylabel("CO2 Level")
+plt.grid(True)
+
+plt.show()
+
+# ------------------------------
+# FIGURE 7 :
+# LINE CHART - AQI TREND BY ZONE
+# ------------------------------
+
+for zone in df["Zone_Name"].unique():
+    
+    zone_data = df[df["Zone_Name"] == zone]
+    
+    plt.plot(
+        zone_data["Month"],
+        zone_data["AQI"],
+        marker='o',
+        label=zone
+    )
+
+plt.title("AQI Trend by Zone")
+plt.xlabel("Month")
+plt.ylabel("AQI")
+plt.legend()
+plt.grid(True)
+
+plt.show()
